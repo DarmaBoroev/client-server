@@ -28,7 +28,7 @@ public:
 
 	std::size_t length() const
 	{
-		return header_length + body_length_ + name_length + 2;
+		return header_length + body_length_ + name_length + num;
 	}
 
 	const char* body() const
@@ -39,6 +39,11 @@ public:
 	char* body()
 	{
 		return data_ + header_length;
+	}
+
+	char* dataWithName()
+	{
+		return dataWithName_;
 	}
 
 	std::size_t body_length() const
@@ -75,32 +80,57 @@ public:
 
 	void rewriteData(char* arr1, int sizeName, char* arr2, int sizeBody)
 	{
-		std::cout << "namesize: " << sizeName << " ";
-		name_length = sizeName;
+		num = 2;
+		name_length = sizeName;// применяется в функции length()
 		int sizeNameBody = sizeName + sizeBody + 2;
 		char header[header_length + 1] = "";
 		char znaki[3] = ": ";
 
 		std::sprintf(header, "%4d", static_cast<int>(sizeNameBody));
 		std::memcpy(dataWithName_, header, sizeof(header));
+
 		strncat(dataWithName_, arr1, sizeName);
 		strncat(dataWithName_, znaki, 2);
-
 		strncat(dataWithName_, arr2, sizeBody);
-		std::cout << "rewrite 3: " << dataWithName_;
 	}
 
-	char* dataWithName()
+	void rewriteDataForInfo()
 	{
-		return dataWithName_;
+		num = 2;
+		body_length_ = 49;
+		name_length = 25;
+		char info[77] = "You did not enter your username!Please, enter your username.(Example: #Ivan)";
+		int size = 76;
+		char header[header_length + 1] = "";
+		std::sprintf(header, "%4d", static_cast<int>(size));
+		std::memcpy(dataWithName_, header, sizeof(header));
+		strncat(dataWithName_, info, size);
 	}
 
+	void rewriteDataForList(std::list <char*> nameList, int sizeName, int i)
+	{
+		char number[2];
+		char name[30];
+		memcpy(name, nameList.front(), sizeName);
+		std::sprintf(number, "%d", static_cast<int>(i));
+		std::cout << "num: " << number << " ";
+		name_length = sizeName;
+		num = 2;
+		body_length_ = 0;
+		std::cout << "namelen: " << name_length;
+		char header[header_length + 1] = "";
+		std::sprintf(header, "%4d", static_cast<int>(sizeName));
+		std::memcpy(dataWithName_, header, sizeof(header));
+		strncat(dataWithName_, number, sizeof(number));
+		strncat(dataWithName_, name, sizeName);
+	}
 
 private:
 	char data_[header_length + max_body_length];
 	char dataWithName_[header_length + max_body_length];
 	std::size_t body_length_;
 	int name_length;
+	int num;
 };
 
 #endif // CHAT_MESSAGE_HPP

@@ -72,12 +72,6 @@ public:
 	{
 	}
 
-	~chat_session()
-	{
-		/*delete[] name;*/
-		delete[] body;
-	}
-
 	void start()
 	{
 		room_.join(shared_from_this());
@@ -126,20 +120,37 @@ private:
 				{
 					sizeName = read_msg_.body_length();
 					iDel(read_msg_.body(), sizeName, 1);
-					std::cout << sizeName << std::endl;
-					name = new char[sizeName];
-					std::cout << "namesize: " << strlen(name) << " ";
 					memcpy(name, read_msg_.body(), sizeName);
+					std::cout << "nsme: " << name << " " <<strlen(name);
 					clientsName.push_back(name);
 					do_read_header();
+					check = false;
+				}
+				else if (*read_msg_.body() == '@')
+				{
+					std::cout << "sizelist: " << clientsName.size() << " ";
+					for (int i = 1; i <= clientsName.size(); i++)
+					{
+						read_msg_.rewriteDataForList(clientsName,sizeName ,i);
+						room_.deliver(read_msg_);
+						do_read_header();
+					}
 				}
 				else
 				{
-					int sizeBody = read_msg_.body_length();
-					body = new char[sizeBody];
-					read_msg_.rewriteData(name, sizeName, read_msg_.body(), sizeBody);
-					room_.deliver(read_msg_);
-					do_read_header();
+					if (check)
+					{
+						read_msg_.rewriteDataForInfo();
+						room_.deliver(read_msg_);
+						do_read_header();
+					}
+					else
+					{
+						int sizeBody = read_msg_.body_length();
+						read_msg_.rewriteData(name, sizeName, read_msg_.body(), sizeBody);
+						room_.deliver(read_msg_);
+						do_read_header();
+					}
 				}
 			}
 			else
@@ -165,7 +176,6 @@ private:
 
 	void do_write()
 	{
-		std::cout << "write: " << write_msgs_.front().dataWithName() << std::endl;
 		auto self(shared_from_this());
 		boost::asio::async_write(socket_,
 			boost::asio::buffer(write_msgs_.front().dataWithName(),
@@ -174,7 +184,6 @@ private:
 		{
 			if (!ec)
 			{
-				/*std::cout << write_msgs_.front().data() << std::endl;*/
 				write_msgs_.pop_front();
 				if (!write_msgs_.empty())
 				{
@@ -193,9 +202,9 @@ private:
 	chat_message read_msg_;
 	chat_message_queue write_msgs_;
 	std::list <char*> clientsName;
-	char* name;
-	char* body;
+	char name[30];
 	int sizeName;
+	bool check = true;
 };
 
 //----------------------------------------------------------------------
