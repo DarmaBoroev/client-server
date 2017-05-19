@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include <cstring>
 #include "chat_message.h"
+#include <vector>
 
 using boost::asio::ip::tcp;
 
@@ -25,6 +26,7 @@ public:
 };
 
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
+std::list <char*> clientsName;
 
 //----------------------------------------------------------------------
 
@@ -72,9 +74,21 @@ public:
 	{
 	}
 
+	~chat_session()
+	{
+		char info[40] = "Info: Disabled ";
+		strncat(info, name, sizeName);
+		read_msg_.rewriteDataForInfo(info, (15+sizeName));
+		room_.deliver(read_msg_);
+		clientsName.remove(name);
+	}
+
 	void start()
 	{
 		room_.join(shared_from_this());
+		char info[27] = "Info: Connected new client";
+		read_msg_.rewriteDataForInfo(info, 26);
+		room_.deliver(read_msg_);
 		do_read_header();
 	}
 
@@ -121,26 +135,27 @@ private:
 					sizeName = read_msg_.body_length();
 					iDel(read_msg_.body(), sizeName, 1);
 					memcpy(name, read_msg_.body(), sizeName);
-					std::cout << "nsme: " << name << " " <<strlen(name);
 					clientsName.push_back(name);
 					do_read_header();
 					check = false;
 				}
 				else if (*read_msg_.body() == '@')
 				{
-					std::cout << "sizelist: " << clientsName.size() << " ";
+					std::list<char*>::iterator it;
+					it = clientsName.begin();
 					for (int i = 1; i <= clientsName.size(); i++)
 					{
-						read_msg_.rewriteDataForList(clientsName,sizeName ,i);
+						read_msg_.rewriteDataForList(clientsName,sizeName, it++,i);
 						room_.deliver(read_msg_);
-						do_read_header();
 					}
+					do_read_header();
 				}
 				else
 				{
 					if (check)
 					{
-						read_msg_.rewriteDataForInfo();
+						char info[83] = "Info: You did not enter your username!Please, enter your username.(Example: #Ivan)";
+						read_msg_.rewriteDataForInfo(info, 83);
 						room_.deliver(read_msg_);
 						do_read_header();
 					}
@@ -201,7 +216,6 @@ private:
 	chat_room& room_;
 	chat_message read_msg_;
 	chat_message_queue write_msgs_;
-	std::list <char*> clientsName;
 	char name[30];
 	int sizeName;
 	bool check = true;

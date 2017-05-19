@@ -94,32 +94,32 @@ public:
 		strncat(dataWithName_, arr2, sizeBody);
 	}
 
-	void rewriteDataForInfo()
+	void rewriteDataForInfo(char* info, int size)
 	{
-		num = 2;
-		body_length_ = 49;
-		name_length = 25;
-		char info[77] = "You did not enter your username!Please, enter your username.(Example: #Ivan)";
-		int size = 76;
+		num = 0;
+		body_length_ = size;
+		name_length = 0;
 		char header[header_length + 1] = "";
 		std::sprintf(header, "%4d", static_cast<int>(size));
 		std::memcpy(dataWithName_, header, sizeof(header));
 		strncat(dataWithName_, info, size);
 	}
 
-	void rewriteDataForList(std::list <char*> nameList, int sizeName, int i)
+	void rewriteDataForList(std::list <char*> nameList, int sizeName, std::list<char*>::iterator it, int i)
 	{
-		char number[2];
+		char number[3];
 		char name[30];
-		memcpy(name, nameList.front(), sizeName);
-		std::sprintf(number, "%d", static_cast<int>(i));
-		std::cout << "num: " << number << " ";
+		char point[2] = ".";
 		name_length = sizeName;
 		num = 2;
 		body_length_ = 0;
-		std::cout << "namelen: " << name_length;
+		
+		memcpy(name, *it, sizeName);
+		std::sprintf(number, "%d", static_cast<int>(i));
+		strncat(number, point, 1);
+
 		char header[header_length + 1] = "";
-		std::sprintf(header, "%4d", static_cast<int>(sizeName));
+		std::sprintf(header, "%4d", static_cast<int>(sizeName+2));
 		std::memcpy(dataWithName_, header, sizeof(header));
 		strncat(dataWithName_, number, sizeof(number));
 		strncat(dataWithName_, name, sizeName);
