@@ -1,4 +1,4 @@
-﻿Сборка начата 19.05.2017 1:16:18.
+﻿Сборка начата 19.05.2017 18:03:26.
      1>Проект "C:\Users\dboro\Documents\Visual Studio 2013\Projects\MP\chat_server\chat_server\chat_server.vcxproj" в узле 2 (целевые объекты Build).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt chat_server.cpp
@@ -7,7 +7,7 @@
          - add -D_WIN32_WINNT=0x0501 to the compiler command line; or
          - add _WIN32_WINNT=0x0501 to your project's Preprocessor Definitions.
          Assuming _WIN32_WINNT=0x0501 (i.e. Windows XP target).
-     1>c:\users\dboro\documents\visual studio 2013\projects\mp\chat_server\chat_server\chat_server.cpp(146): warning C4018: <=: несоответствие типов со знаком и без знака
+     1>c:\users\dboro\documents\visual studio 2013\projects\mp\chat_server\chat_server\chat_server.cpp(159): warning C4018: <=: несоответствие типов со знаком и без знака
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\dboro\Documents\Visual Studio 2013\Projects\MP\chat_server\Debug\chat_server.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\dboro\Documents\Visual Studio 2013\Projects\MP\chat_server\Debug\chat_server.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\dboro\Documents\Visual Studio 2013\Projects\MP\chat_server\Debug\chat_server.lib" /MACHINE:X86 Debug\chat_server.obj
          chat_server.vcxproj -> C:\Users\dboro\Documents\Visual Studio 2013\Projects\MP\chat_server\Debug\chat_server.exe
@@ -15,4 +15,4 @@
 
 Сборка успешно завершена.
 
-Затраченное время: 00:00:05.77
+Затраченное время: 00:00:07.84

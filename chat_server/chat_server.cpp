@@ -12,7 +12,7 @@
 
 using boost::asio::ip::tcp;
 
-//----------------------------------------------------------------------
+  //----------------------------------------------------------------------
 
 typedef std::deque<chat_message> chat_message_queue;
 
@@ -26,7 +26,8 @@ public:
 };
 
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
-std::list <char*> clientsName;
+std::list<char*> clientsName;
+std::list<int> name_length;
 
 //----------------------------------------------------------------------
 
@@ -81,6 +82,7 @@ public:
 		read_msg_.rewriteDataForInfo(info, (15+sizeName));
 		room_.deliver(read_msg_);
 		clientsName.remove(name);
+		name_length.remove(sizeName);
 	}
 
 	void start()
@@ -135,18 +137,31 @@ private:
 					sizeName = read_msg_.body_length();
 					iDel(read_msg_.body(), sizeName, 1);
 					memcpy(name, read_msg_.body(), sizeName);
+					name_length.push_back(sizeName);
 					clientsName.push_back(name);
 					do_read_header();
 					check = false;
 				}
-				else if (*read_msg_.body() == '@')
+				else if (*read_msg_.body() == '@' && *(read_msg_.body()+1)=='l')
 				{
-					std::list<char*>::iterator it;
-					it = clientsName.begin();
-					for (int i = 1; i <= clientsName.size(); i++)
+					if (clientsName.empty())
 					{
-						read_msg_.rewriteDataForList(clientsName,sizeName, it++,i);
+						char info[20] = "Info: No one online";
+						read_msg_.rewriteDataForInfo(info, 19);
 						room_.deliver(read_msg_);
+					}
+					else
+					{
+						std::list<char*>::iterator it1;
+						std::list<int>::iterator it2;
+						it1 = clientsName.begin();
+						it2 = name_length.begin();
+						for (int i = 1; i <= clientsName.size(); i++)
+						{
+							read_msg_.rewriteDataForList(clientsName, *it2, it1++, i);
+							it2++;
+							room_.deliver(read_msg_);
+						}
 					}
 					do_read_header();
 				}
@@ -177,11 +192,7 @@ private:
 
 	void iDel(char *array, int &lenAr, int nom)
 	{
-		if (nom > lenAr || nom < 1)
-		{
-			std::cout << "Ошибка удаления" << std::endl;
-		}
-
+	
 		for (int ix = nom - 1; ix < lenAr - 1; ix++)
 		{
 			array[ix] = array[ix + 1];
@@ -217,7 +228,7 @@ private:
 	chat_message read_msg_;
 	chat_message_queue write_msgs_;
 	char name[30];
-	int sizeName;
+	int sizeName = 0;
 	bool check = true;
 };
 
